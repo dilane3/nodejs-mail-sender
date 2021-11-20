@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      background-color: #3e4bff;
+      font-family: ubuntu, arial, sans-serif;
+    }
+
+    section {
+      width: 300px;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 5px;
+      box-shadow: 0 2px 15px #21297c;
+      background-color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    h3 {
+      text-align: center;
+      font-size: 24px;
+      color: #3e4bff;
+      margin-top: 0;
+    }
+
+    input {
+      width: calc(100% - 20px);
+      height: 20px;
+      padding: 5px 10px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      caret-color: #3e4bff;
+    }
+
+    input[type="text"] {
+      margin-bottom: 10px;
+    }
+
+    input:focus {
+      outline: inherit;
+      outline-width: 1px;
+      outline-color: red;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      background-color: #3e4bff;
+      padding: 10px;
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    button:hover {
+      cursor: pointer;
+    }
+
+    .send {
+      position: relative;
+      width: 100%;
+      height: auto;
+    }
+
+    span.loading {
+      position: absolute;
+      bottom: 5px;
+      right: 30%;
+      border: 4px solid #f4f4f4;
+      border-radius: 100%;
+      border-bottom-color: transparent;
+      width: 20px;
+      height: 20px;
+    }
+
+    .loading {
+      animation: loading .6s linear infinite;
+    }
+
+    @keyframes loading {
+      from {
+        transform: rotateZ(0deg);
+      }
+
+      to {
+        transform: rotateZ(360deg);
+      }
+    }
+
+    .error {
+      position: relative;
+      width: calc(100% - 50px);
+      height: auto;
+      padding: 10px 40px 10px 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: rgb(241, 77, 85);
+      border: 1px solid rgb(250, 51, 78);
+      color: #fff;
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .error-close {
+      position: absolute;
+      top: -8px;
+      right: 4px;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h3>Send Mail</h3>
+
+    <div class="error hidden">
+      <span class="error-close">&times;</span>
+
+      <span class="error-message">
+        Either the subject or the message or the receiver address is undefined !
+      </span>
+    </div>
+
+    <input type="text" class="subject" placeholder="The subject">
+    <input type="text" class="message" placeholder="Your message">
+    <input type="email" placeholder="To whom ?">
+
+    <div class="send">
+      <span class="loader"></span>
+      <button>Send</button>
+    </div>
+  </section>
+
+  <script>
+    const message = document.querySelector(".message")
+    const subject = document.querySelector(".subject")
+    const receiver = document.querySelector("input[type='email']")
+    const btn = document.querySelector("button")
+    const loader = document.querySelector("span.loader")
+
+    const error = document.querySelector(".error")
+    const closeError = document.querySelector(".error-close")
+
+    btn.onclick = function(event) {
+      event.preventDefault()
+
+      if (message.value && subject.value && receiver.value) {
+        error.classList.add('hidden')
+        loader.classList.add("loading")
+
+        const msg = {
+          message: message.value,
+          subject: subject.value,
+          receiver: receiver.value
+        }
+
+        let formdata = new FormData()
+
+        formdata.append("message", msg.message)
+        formdata.append("receiver", msg.receiver)
+        formdata.append("subject", msg.subject)
+
+        console.log(formdata.get("receiver"))
+
+        fetch("http://localhost:5000/api/sendmail", {method: "post", body: formdata})
+        .then(res => res.json())
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .then(() => {
+          loader.classList.remove("loading")
+        })
+      } else {
+        error.classList.remove('hidden')
+      }
+    }
+
+    closeError.onclick = function(event) {
+      event.preventDefault()
+
+      error.classList.add('hidden')
+    }
+  </script>
+</body>
+</html>
