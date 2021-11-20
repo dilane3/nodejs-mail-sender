@@ -155,6 +155,7 @@
     </div>
   </section>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
   <script>
     const message = document.querySelector(".message")
     const subject = document.querySelector(".subject")
@@ -164,6 +165,12 @@
 
     const error = document.querySelector(".error")
     const closeError = document.querySelector(".error-close")
+
+    const instance = axios.create({
+      baseUrl: "http://localhost:5000/"
+    })
+
+    console.log(instance)
 
     btn.onclick = function(event) {
       event.preventDefault()
@@ -178,21 +185,12 @@
           receiver: receiver.value
         }
 
-        let formdata = new FormData()
-
-        formdata.append("message", msg.message)
-        formdata.append("receiver", msg.receiver)
-        formdata.append("subject", msg.subject)
-
-        console.log(formdata.get("receiver"))
-
-        fetch("http://localhost:5000/api/sendmail", {method: "post", body: formdata})
-        .then(res => res.json())
+        instance.post("api/sendmail", msg)
         .then(res => {
           console.log(res)
         })
         .catch(err => {
-          console.log(err)
+          console.error(err)
         })
         .then(() => {
           loader.classList.remove("loading")

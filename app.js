@@ -14,7 +14,7 @@ const mailer = () => {
 
   const setMailOptions = ({receiver, message, subject}) => (
     {
-      from: "komboudilane125@gmail.com",
+      from: "dilane3@gmail.com",
       to: receiver,
       subject: subject,
       text: message,
