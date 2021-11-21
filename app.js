@@ -10,10 +10,12 @@ const mailer = () => {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "komboudilane125@gmail.com",
+      user: "komb.dilane3@gmail.com",
       pass: process.env.GMAIL_PASS
     }
   });
+
+  console.log(path.resolve("./views/"))
 
   // point to the template folder
   const handlebarOptions = {
@@ -35,7 +37,7 @@ const mailer = () => {
       subject: subject,
       template: 'email', // the name of the template file i.e email.handlebars
       context:{
-          name: "Dilane"
+        message
       }
     }
   )
