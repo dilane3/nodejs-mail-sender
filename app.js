@@ -1,5 +1,9 @@
+require("dotenv").config()
+
 const express = require('express')
+const hbs = require('nodemailer-express-handlebars')
 const nodemailer = require('nodemailer')
+const path = require('path')
 const cors = require("cors")
 
 const mailer = () => {
@@ -7,18 +11,32 @@ const mailer = () => {
     service: "gmail",
     auth: {
       user: "komboudilane125@gmail.com",
-      pass: "dilane1420gmail"
+      pass: process.env.GMAIL_PASS
     }
   });
+
+  // point to the template folder
+  const handlebarOptions = {
+    viewEngine: {
+        partialsDir: path.resolve('./views/'),
+        defaultLayout: false,
+    },
+    viewPath: path.resolve('./views/'),
+  };
+
+  // use a template file with nodemailer
+  transporter.use('compile', hbs(handlebarOptions))
   
 
   const setMailOptions = ({receiver, message, subject}) => (
     {
-      from: "dilane3@gmail.com",
+      from: "Dilane3 <dilane3@gmail.com>",
       to: receiver,
       subject: subject,
-      text: message,
-      html: `<b>${message}</b>`
+      template: 'email', // the name of the template file i.e email.handlebars
+      context:{
+          name: "Dilane"
+      }
     }
   )
 
